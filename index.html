@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Class Schedule</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load React and Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Icon = ({ name, size = 16, className = "" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const COURSES = [
+            { id: 1, code: 'INFSCI 2591', name: 'Algorithm Design', instructor: 'Pengfei Zhou', days: ['Mon'], start: '12:00', end: '14:50', location: 'IS Building 406', color: 'bg-blue-100 border-blue-500 text-blue-700' },
+            { id: 2, code: 'INFSCI 2300', name: 'Human Information Processing', instructor: 'Peter Brusilovsky', days: ['Mon'], start: '18:00', end: '20:50', location: 'IS Building 501', color: 'bg-indigo-100 border-indigo-500 text-indigo-700' },
+            { id: 3, code: 'LING 0008', name: 'English', instructor: 'Heather Mcnaught', days: ['Mon', 'Wed', 'Fri'], start: '15:00', end: '15:50', location: 'Cathedral of Learning 314', color: 'bg-emerald-100 border-emerald-500 text-emerald-700' },
+            { id: 4, code: 'INFSCI 2595', name: 'Machine Learning', instructor: 'Konstantinos Pelechrinis', days: ['Thu'], start: '11:00', end: '13:50', location: 'IS Building 405', color: 'bg-amber-100 border-amber-500 text-amber-700' },
+            { id: 5, code: 'INFSCI 2710', name: 'Database Management', instructor:'Dmitriy Babichenko' , days:['Thu'], start: '15:00', end: '15:50', location:'IS Building 403', color:'bg-red-100 border-red-500 text-red-700' }
+        ];
+
+        const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const HOURS = Array.from({ length: 14 }, (_, i) => i + 8);
+        const ROW_HEIGHT = 48; // 將高度從 64 縮小到 48 以適應螢幕
+
+        function App() {
+            const [selectedCourse, setSelectedCourse] = useState(null);
+
+            const timeToMinutes = (time) => {
+                const [hrs, mins] = time.split(':').map(Number);
+                return (hrs * 60 + mins) - (8 * 60);
+            };
+
+            const getPositionStyles = (start, end) => {
+                const startMins = timeToMinutes(start);
+                const endMins = timeToMinutes(end);
+                const duration = endMins - startMins;
+                const top = (startMins / 60) * ROW_HEIGHT;
+                const height = (duration / 60) * ROW_HEIGHT;
+                return { top: `${top}px`, height: `${height}px`, duration };
+            };
+
+            return (
+                <div className="min-h-screen p-2 md:p-6 flex flex-col">
+                    <div className="max-w-6xl mx-auto w-full flex-grow">
+                        <header className="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-2">
+                            <div>
+                                <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <Icon name="graduation-cap" size={28} className="text-blue-600" />
+                                    Fran's 2026 Spring Class Schedule
+                                </h1>
+                                <p className="text-slate-500 text-sm font-medium italic">MS in Information Science of University of Pittsburgh</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <div className="bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-200 text-center">
+                                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-tight leading-none">Total Units</span>
+                                    <span className="text-slate-900 font-semibold text-base">15</span>
+                                </div>
+                            </div>
+                        </header>
+
+                        <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <div className="min-w-[800px] relative">
+                                    {/* Header */}
+                                    <div className="grid grid-cols-6 border-b border-slate-100 bg-slate-50/50">
+                                        <div className="p-2 border-r border-slate-100 text-slate-400 text-[10px] font-bold uppercase text-center">Time</div>
+                                        {DAYS.map(day => (
+                                            <div key={day} className="p-2 text-center text-slate-700 font-bold border-r last:border-0 border-slate-100 text-sm">{day}</div>
+                                        ))}
+                                    </div>
+
+                                    {/* Grid Body */}
+                                    <div className="relative flex">
+                                        {/* Time Sidebar */}
+                                        <div className="w-[16.666%] flex-shrink-0 border-r border-slate-100">
+                                            {HOURS.map(hour => (
+                                                <div key={hour} 
+                                                     style={{ height: `${ROW_HEIGHT}px` }} 
+                                                     className="flex items-start justify-center pt-1 text-[10px] text-slate-400 font-medium border-b border-slate-50 last:border-0">
+                                                    {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Columns */}
+                                        <div className="flex-grow grid grid-cols-5 relative">
+                                            {DAYS.map((_, i) => <div key={i} className="absolute h-full border-r border-slate-100 last:border-0" style={{ left: `${(i + 1) * 20}%` }} />)}
+                                            {HOURS.map((_, i) => <div key={i} className="absolute w-full border-b border-slate-50" style={{ top: `${(i + 1) * ROW_HEIGHT}px` }} />)}
+
+                                            {/* Courses */}
+                                            {DAYS.map((day) => {
+                                                const dayCourses = COURSES.filter(c => c.days.includes(day));
+                                                return (
+                                                    <div key={day} className="relative h-full">
+                                                        {dayCourses.map(course => {
+                                                            const { top, height, duration } = getPositionStyles(course.start, course.end);
+                                                            const isShort = duration <= 60; 
+
+                                                            return (
+                                                                <div
+                                                                    key={`${course.id}-${day}`}
+                                                                    onClick={() => setSelectedCourse(course)}
+                                                                    className={`absolute left-0.5 right-0.5 rounded border-l-4 shadow-sm cursor-pointer transition-all hover:brightness-95 hover:scale-[1.01] z-10 flex flex-col justify-between ${course.color} ${isShort ? 'p-1' : 'p-1.5'}`}
+                                                                    style={{ top, height }}
+                                                                >
+                                                                    <div className="overflow-hidden">
+                                                                        <div className={`font-bold opacity-60 uppercase tracking-tighter ${isShort ? 'text-[7px] leading-none mb-0.5' : 'text-[8px] mb-0.5'}`}>
+                                                                            {course.code}
+                                                                        </div>
+                                                                        <div className={`font-bold leading-tight ${isShort ? 'text-[10px] line-clamp-1' : 'text-[11px] line-clamp-2'}`}>
+                                                                            {course.name}
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div className={`flex items-center gap-0.5 font-semibold opacity-90 mt-auto ${isShort ? 'text-[8px] pt-0' : 'text-[9px] pt-0.5 border-t border-black/5'}`}>
+                                                                        <Icon name="map-pin" size={isShort ? 8 : 10} className="shrink-0" />
+                                                                        <span className="truncate whitespace-nowrap">{course.location}</span>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Detail Modal */}
+                    {selectedCourse && (
+                        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+                                <div className={`h-2 ${selectedCourse.color.split(' ')[1].replace('border-', 'bg-')}`} />
+                                <div className="p-6">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-slate-900">{selectedCourse.name}</h2>
+                                            <p className="text-sm font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded inline-block mt-2">{selectedCourse.code}</p>
+                                        </div>
+                                        <button onClick={() => setSelectedCourse(null)} className="text-slate-400 hover:bg-slate-100 p-1 rounded-full">
+                                            <Icon name="x" size={24} />
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-slate-50 rounded-lg"><Icon name="user" className="text-yellow-500" /></div>
+                                            <div>
+                                                <div className="text-xs font-bold text-slate-400 uppercase">Instructor</div>
+                                                <div className="text-slate-700 font-medium">{selectedCourse.instructor}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-slate-50 rounded-lg"><Icon name="clock" className="text-blue-500" /></div>
+                                            <div>
+                                                <div className="text-xs font-bold text-slate-400 uppercase">Schedule</div>
+                                                <div className="text-slate-700 font-medium">{selectedCourse.days.join(', ')} | {selectedCourse.start} - {selectedCourse.end}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-slate-50 rounded-lg"><Icon name="map-pin" className="text-green-500" /></div>
+                                            <div>
+                                                <div className="text-xs font-bold text-slate-400 uppercase">Location</div>
+                                                <div className="text-slate-700 font-medium">{selectedCourse.location}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setSelectedCourse(null)} className="w-full mt-4 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
