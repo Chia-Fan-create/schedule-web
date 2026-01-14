@@ -2,6 +2,10 @@
 
 An interactive, responsive weekly class schedule built for the 2026 Spring semester at the University of Pittsburgh (MS in Information Science).
 
+#### Live Demo
+
+https://chia-fan-create.github.io/schedule-web/
+
 #### Features
 
 - Interactive Grid View: A clean weekly visualization of all courses from 8 AM to 9 PM.
@@ -28,4 +32,6 @@ Note: An active internet connection is required to load the styles and libraries
 
 #### Preview
 
-Once opened, you will see a structured grid displaying:
+Once opened, you will see:
+
+[![Project Preview](assets/preview.png)](https://chia-fan-create.github.io/schedule-web/)
