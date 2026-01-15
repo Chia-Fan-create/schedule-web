@@ -52,12 +52,12 @@
             { id: 2, code: 'INFSCI 2300', name: 'Human Information Processing', instructor: 'Peter Brusilovsky', days: ['Mon'], start: '18:00', end: '20:50', location: 'IS Building 501', color: 'bg-indigo-100 border-indigo-500 text-indigo-700' },
             { id: 3, code: 'LING 0008', name: 'English', instructor: 'Heather Mcnaught', days: ['Mon', 'Wed', 'Fri'], start: '15:00', end: '15:50', location: 'Cathedral of Learning 314', color: 'bg-emerald-100 border-emerald-500 text-emerald-700' },
             { id: 4, code: 'INFSCI 2595', name: 'Machine Learning', instructor: 'Konstantinos Pelechrinis', days: ['Thu'], start: '11:00', end: '13:50', location: 'IS Building 405', color: 'bg-amber-100 border-amber-500 text-amber-700' },
-            { id: 5, code: 'INFSCI 2710', name: 'Database Management', instructor:'Dmitriy Babichenko' , days:['Thu'], start: '15:00', end: '15:50', location:'IS Building 403', color:'bg-red-100 border-red-500 text-red-700' }
+            { id: 5, code: 'INFSCI 2710', name: 'Database Management', instructor:'Dmitriy Babichenko' , days:['Thu'], start: '15:00', end: '17:30', location:'IS Building 403', color:'bg-red-100 border-red-500 text-red-700' }
         ];
 
         const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
         const HOURS = Array.from({ length: 14 }, (_, i) => i + 8);
-        const ROW_HEIGHT = 48; // 將高度從 64 縮小到 48 以適應螢幕
+        const ROW_HEIGHT = 48; // pixels per hour
 
         function App() {
             const [selectedCourse, setSelectedCourse] = useState(null);
